@@ -19,3 +19,21 @@ class Producto(models.Model):
     
     def __str__(self):
         return self.nombre
+
+class Pedido(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    fecha = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    estado = models.CharField(max_length=20, choices=[('Pendiente', 'Pendiente'), ('Enviado', 'Enviado'), ('Completado', 'Completado')], default='Pendiente')
+
+    def __str__(self):
+        return f'Pedido {self.id} - {self.usuario.username}'
+    
+class DetallePedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField()
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.producto.nombre} x {self.cantidad}'
