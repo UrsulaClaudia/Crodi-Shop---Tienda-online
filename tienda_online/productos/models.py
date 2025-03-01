@@ -37,3 +37,24 @@ class DetallePedido(models.Model):
 
     def __str__(self):
         return f'{self.producto.nombre} x {self.cantidad}'
+    
+class Carrito(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    def total(self):
+        return sum(item.subtotal() for item in self.items.all())
+    
+    def __str__(self):
+        return f'Carrito de {self.usuario.username}'
+    
+class CarritoItem(models.Model):
+    carrito = models.ForeignKey(Carrito, related_name='items', on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    def subtotal(self):
+        return self.cantidad * self.producto.precio
+    
+    def __str__(self):
+        return f'{self.producto.nombre} x {self.cantidad}'
